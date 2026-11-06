@@ -8,7 +8,7 @@ interface Props {
 }
 
 // Datos de muestra (modelo para clientes)
-const { numeroPases = 1, nombreInvitado = "Lizeth Gutierrez" } = Astro.props;
+const { numeroPases = 1, nombreInvitado = "Nombre del invitado" } = Astro.props;
 // Una personita por pase (hasta 8, para que no se desborde)
 const personas = Array.from({ length: Math.min(numeroPases, 8) });
 ---

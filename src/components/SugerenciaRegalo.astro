@@ -1,11 +1,14 @@
 ﻿---
 // SugerenciaRegalo.astro
-// Datos del QR. Falta la imagen real del QR de los novios (reemplazar qr.png)
-// y el banco, si quieren que aparezca (vacío no se muestra).
+// Datos del QR de los novios. El banco es opcional (vacío no se muestra).
 const qr = {
     imagen: "/imagenes/qr.png",
     banco: "",
-    titular: "Paulo y Kimberly",
+    datos: [
+        { etiqueta: "Cuenta", valor: "8666524021" },
+        { etiqueta: "Beneficiario", valor: "PAULO ARRIARAN Y KIM VILLAZON" },
+        { etiqueta: "Motivo", valor: "PAULO ARRIARAN Y KIM VILLAZÓN" },
+    ],
 };
 ---
 
@@ -104,9 +107,15 @@ const qr = {
                     {qr.banco}
                 </p>
             )}
-            <p class={`font-mollen-light text-[#556b2f]/90 text-sm ${qr.banco ? "mt-1" : "mt-5"}`}>
-                {qr.titular}
-            </p>
+            <!-- Datos de la cuenta, debajo del QR -->
+            <dl class={`sr-datos ${qr.banco ? "mt-3" : "mt-5"}`}>
+                {qr.datos.map((d) => (
+                    <div class="sr-dato">
+                        <dt class="font-jane-light">{d.etiqueta}</dt>
+                        <dd class="font-mollen-light">{d.valor}</dd>
+                    </div>
+                ))}
+            </dl>
             <p class="font-great-vibes-local text-[#b5975f] text-2xl leading-tight mt-4">
                 ¡Gracias por tu cariño!
             </p>
@@ -239,6 +248,33 @@ const qr = {
         100% {
             left: 130%;
         }
+    }
+
+    /* Datos de la cuenta: etiqueta champán arriba, dato en verde olivo */
+    .sr-datos {
+        width: 100%;
+        padding: 0.9rem 1rem;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.75);
+        border: 1px solid rgba(168, 135, 79, 0.35);
+        text-align: center;
+    }
+    .sr-dato + .sr-dato {
+        margin-top: 0.65rem;
+        padding-top: 0.65rem;
+        border-top: 1px solid rgba(168, 135, 79, 0.2);
+    }
+    .sr-dato dt {
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #a8874f;
+    }
+    .sr-dato dd {
+        margin-top: 0.15rem;
+        font-size: 1rem;
+        color: #3f4f20;
+        overflow-wrap: anywhere;
     }
 
     /* QR: marco blanco con esquinas doradas tipo visor */

@@ -5,6 +5,12 @@ export interface Props {
   title: string;
 }
 const { title } = Astro.props;
+
+// Vista previa al compartir el link (WhatsApp, Facebook, etc.)
+const descripcion =
+  "Sábado 5 de diciembre de 2026 · Salón de Eventos Hacienda Emma, Tiquipaya. ¡Te esperamos!";
+const urlSitio = new URL(Astro.url.pathname, Astro.site).href;
+const imagenPreview = new URL("/imagenes/og-portada.jpg", Astro.site).href;
 ---
 
 <!doctype html>
@@ -16,6 +22,24 @@ const { title } = Astro.props;
     <link rel="icon" type="image/png" href="/iconos/Anillos.png" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    <meta name="description" content={descripcion} />
+
+    <!-- Vista previa al compartir (Open Graph): imagen 1200x630 -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_BO" />
+    <meta property="og:url" content={urlSitio} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:image" content={imagenPreview} />
+    <meta property="og:image:secure_url" content={imagenPreview} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Invitación a la boda de Paulo y Kimberly" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={descripcion} />
+    <meta name="twitter:image" content={imagenPreview} />
     <link
       rel="preload"
       href="/fonts/GreatVibes-Regular.woff2"
@@ -23,25 +47,7 @@ const { title } = Astro.props;
       type="font/woff2"
       crossorigin
     />
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Crimson+Text:wght@400;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Crimson+Text:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Sin Google Fonts: todas las letras que se ven salen de /fonts/ del propio sitio -->
 
     <style>
       /* FORZAR MODO CLARO - DESHABILITAR MODO OSCURO */
