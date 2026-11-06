@@ -1,0 +1,246 @@
+﻿---
+// CodigoVestimenta.astro
+const indicaciones = [
+    { quien: "Damas", que: "Vestido largo", figura: "vestido" },
+    { quien: "Caballeros", que: "Traje elegante", figura: "traje" },
+];
+---
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 👔 SECCIÓN: CÓDIGO DE VESTIMENTA                            -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="relative w-full pt-2 pb-12 px-6 overflow-hidden" id="seccion-vestimenta">
+
+    <!-- COSTADITO izquierda -->
+    <img
+        src="/imagenes/costado-izq.png"
+        alt="Decoración floral"
+        class="absolute -left-4 top-1/2 -translate-y-1/2 w-28 sm:w-32 z-10 pointer-events-none select-none"
+        id="costadito-vestimenta"
+        data-entrada="izq"
+    />
+
+    <!-- CONTENIDO CENTRADO -->
+    <div class="relative z-20 flex flex-col items-center text-center max-w-xs mx-auto">
+
+        <!-- IMAGEN ROPA dentro de un aro dorado -->
+        <div class="cv-icono mb-5" id="img-vestimenta" data-entrada="giro">
+            <svg viewBox="0 0 100 100" fill="none" aria-hidden="true">
+                <circle class="cv-aro" pathLength="1" cx="50" cy="50" r="47"></circle>
+                <circle class="cv-aro cv-aro-fino" pathLength="1" cx="50" cy="50" r="42"></circle>
+            </svg>
+            <img
+                src="/imagenes/codigovestimenta.png"
+                alt="Código de vestimenta"
+                class="w-14 sm:w-16 object-contain relative"
+                style="filter: brightness(0) saturate(100%) invert(51%) sepia(30%) saturate(550%) hue-rotate(0deg) brightness(100%);"
+            />
+        </div>
+
+        <!-- TÍTULO "VESTIMENTA" -->
+        <div class="flex items-center justify-center mb-3" id="titulo-vestimenta" data-entrada="desenfoque">
+            <h2 class="font-jane-light uppercase tracking-[0.18em] text-[#a8874f] text-lg sm:text-xl">
+                Vestimenta
+            </h2>
+        </div>
+
+        <!-- "Formal" entre dos líneas doradas -->
+        <div class="flex items-center justify-center gap-3" data-entrada="abajo">
+            <span class="cv-linea" data-entrada="centro"></span>
+            <p class="font-mollen-light font-normal text-[#556b2f]/90 text-2xl sm:text-3xl leading-relaxed" id="tipo-vestimenta">
+                Formal
+            </p>
+            <span class="cv-linea cv-linea-der" data-entrada="centro"></span>
+        </div>
+
+        <!-- DAMAS Y CABALLEROS: cada uno con su figura en trazo dorado -->
+        <div class="cv-indicaciones mt-9 w-full" id="indicaciones-vestimenta">
+            {
+                indicaciones.map((d, i) => (
+                    <div class="flex flex-col items-center" data-entrada={i === 0 ? "izq" : "der"}>
+                        <svg class="cv-figura" viewBox="0 0 64 100" fill="none" aria-hidden="true">
+                            {d.figura === "vestido" ? (
+                                <>
+                                    <path pathLength="1" d="M25 4 Q26 12 27 19" />
+                                    <path pathLength="1" d="M39 4 Q38 12 37 19" />
+                                    <path pathLength="1" d="M27 19 Q29.5 23 32 20.5 Q34.5 23 37 19 L36.5 33 Q32 35 27.5 33 Z" />
+                                    <path pathLength="1" d="M27.5 33 Q32 31.5 36.5 33" />
+                                    <path pathLength="1" d="M27.5 33 Q24 52 18 72 Q12 86 6 94 Q32 100 58 94 Q52 86 46 72 Q40 52 36.5 33" />
+                                    <path pathLength="1" d="M31 37 Q29 62 24 95.5" />
+                                    <path pathLength="1" d="M33.5 37 Q36 62 42 96" />
+                                </>
+                            ) : (
+                                <>
+                                    <path pathLength="1" d="M22 10 L8 18 Q5 20 5 24 L6 92 L58 92 L59 24 Q59 20 56 18 L42 10" />
+                                    <path pathLength="1" d="M22 10 L32 30 L42 10" />
+                                    <path pathLength="1" d="M22 10 L26 46 L32 30" />
+                                    <path pathLength="1" d="M42 10 L38 46 L32 30" />
+                                    <path pathLength="1" d="M27 14 L32 17 L37 14 L37 20 L32 17 L27 20 Z" />
+                                    <path pathLength="1" d="M32 30 L32 92" />
+                                    <path pathLength="1" d="M44 42 L52 42 M45 42 L46.5 38.5 L48 42 L49.5 38.5 L51 42" />
+                                    <path pathLength="1" d="M5 24 L2 88" />
+                                    <path pathLength="1" d="M59 24 L62 88" />
+                                    <circle cx="32" cy="56" r="1.4" />
+                                    <circle cx="32" cy="68" r="1.4" />
+                                </>
+                            )}
+                        </svg>
+                        <p class="font-jane-light uppercase tracking-[0.2em] text-[#556b2f] text-sm mt-4">
+                            {d.quien}
+                        </p>
+                        <p class="font-great-vibes-local text-[#a8874f] text-3xl leading-tight mt-1">
+                            {d.que}
+                        </p>
+                    </div>
+                ))
+            }
+        </div>
+
+    </div>
+</section>
+
+<style>
+    .cv-icono {
+        position: relative;
+        width: 6rem;
+        height: 6rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .cv-icono svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+    }
+    .cv-aro {
+        stroke: #a8874f;
+        stroke-width: 1;
+        stroke-dasharray: 1;
+    }
+    .cv-aro-fino {
+        stroke: rgba(168, 135, 79, 0.45);
+        stroke-width: 0.6;
+    }
+
+    .cv-linea {
+        display: block;
+        height: 1px;
+        width: 2.75rem;
+        background: linear-gradient(90deg, transparent, rgba(168, 135, 79, 0.85));
+        transform-origin: 100% 50%;
+    }
+    .cv-linea-der {
+        background: linear-gradient(90deg, rgba(168, 135, 79, 0.85), transparent);
+        transform-origin: 0% 50%;
+    }
+
+    /* Damas | Caballeros, con una línea dorada fina al medio */
+    .cv-indicaciones {
+        display: grid;
+        grid-template-columns: 1fr 1px 1fr;
+        align-items: end;
+        column-gap: 0.75rem;
+    }
+    .cv-indicaciones > div:first-child {
+        grid-column: 1;
+    }
+    .cv-indicaciones > div:last-child {
+        grid-column: 3;
+    }
+    .cv-indicaciones::before {
+        content: "";
+        grid-column: 2;
+        grid-row: 1;
+        align-self: stretch;
+        background: linear-gradient(180deg, transparent, rgba(168, 135, 79, 0.6), transparent);
+    }
+    .cv-figura {
+        width: 3.6rem;
+        height: auto;
+        overflow: visible;
+    }
+    .cv-figura path {
+        stroke: #a8874f;
+        stroke-width: 1.4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+    }
+    .cv-figura circle {
+        fill: #a8874f;
+    }
+
+    #costadito-vestimenta {
+        transform-origin: 0% 50%;
+        filter: drop-shadow(0 12px 16px rgba(54, 67, 27, 0.14));
+    }
+</style>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🎬 ANIMACIONES CON GSAP                                     -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<script>
+    import { gsap } from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+    import { animarEntradas, sinMovimiento } from "../scripts/entradas";
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const seccion = document.getElementById("seccion-vestimenta");
+        if (!seccion) return;
+
+        animarEntradas(seccion);
+
+        // Los aros dorados se dibujan
+        gsap.fromTo(
+            "#img-vestimenta .cv-aro",
+            { strokeDashoffset: 1 },
+            {
+                strokeDashoffset: 0,
+                duration: 1.8,
+                stagger: 0.2,
+                ease: "power2.inOut",
+                scrollTrigger: {
+                    trigger: "#img-vestimenta",
+                    start: "top 90%",
+                    toggleActions: "play none none reset",
+                },
+            },
+        );
+
+        // El vestido y el traje se dibujan con un trazo dorado
+        gsap.fromTo(
+            "#indicaciones-vestimenta .cv-figura path",
+            { strokeDashoffset: 1 },
+            {
+                strokeDashoffset: 0,
+                duration: 2,
+                stagger: 0.08,
+                ease: "power2.inOut",
+                scrollTrigger: {
+                    trigger: "#indicaciones-vestimenta",
+                    start: "top 88%",
+                    toggleActions: "play none none reset",
+                },
+            },
+        );
+
+        if (!sinMovimiento()) {
+            gsap.fromTo(
+                "#costadito-vestimenta",
+                { rotation: -6 },
+                {
+                    rotation: -2,
+                    duration: 3.8,
+                    ease: "sine.inOut",
+                    yoyo: true,
+                    repeat: -1,
+                },
+            );
+        }
+    });
+</script>

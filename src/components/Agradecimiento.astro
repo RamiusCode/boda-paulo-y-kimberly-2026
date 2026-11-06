@@ -1,0 +1,243 @@
+﻿---
+// Agradecimiento.astro
+const padrinos = [
+    {
+        titulo: "Padrinos de Religión",
+        nombres: ["Dr. Andrés Villarroel Cruz", "Lic. Daniela Montaño Ríos"],
+    },
+    {
+        titulo: "Padrinos de Civil",
+        nombres: ["Ing. Javier Quiroga Peña", "Arq. Lucía Céspedes Aguilar"],
+    },
+    {
+        titulo: "Padrinos de Aros",
+        nombres: ["Martín Salazar Rojas", "Sofía Ríos Torrico"],
+    },
+];
+---
+
+<section class="relative w-full pt-10 pb-32 px-6 overflow-hidden" id="seccion-agradecimiento">
+
+    <!-- FONDO: recto arriba, línea diagonal que sube abajo -->
+    <div
+        class="absolute inset-0 z-0 bg-[#f6efe2]"
+        style="clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);"
+    ></div>
+
+    <div class="relative z-10 flex flex-col items-center text-center max-w-xs mx-auto">
+
+        <!-- CORAZÓN DORADO QUE SE DIBUJA -->
+        <svg class="ag-corazon mb-2" id="corazon-agradecimiento" viewBox="0 0 48 44" fill="none" aria-hidden="true" data-entrada="giro">
+            <path pathLength="1" d="M24 40C24 40 4 27 4 14.5C4 8 9 3.5 14.5 3.5C18.6 3.5 22 6 24 9.5C26 6 29.4 3.5 33.5 3.5C39 3.5 44 8 44 14.5C44 27 24 40 24 40Z"></path>
+        </svg>
+
+        <!-- TÍTULO "Agradecimiento" -->
+        <h2
+            class="ag-titulo font-great-vibes-local text-5xl sm:text-6xl leading-tight mb-4"
+            id="titulo-agradecimiento"
+            data-entrada="desenfoque"
+        >
+            Agradecimiento
+        </h2>
+
+        <!-- PUNTO SEPARADOR con líneas -->
+        <div class="flex items-center justify-center gap-2 mb-6" id="punto-agradecimiento" aria-hidden="true">
+            <span class="ag-linea" data-entrada="centro"></span>
+            <span class="w-2 h-2 rounded-full bg-[#556b2f] ag-punto"></span>
+            <span class="ag-linea ag-linea-der" data-entrada="centro"></span>
+        </div>
+
+        <!-- MENSAJE -->
+        <p
+            class="font-mollen-light text-[#556b2f]/90 text-base sm:text-lg leading-relaxed"
+            id="texto-agradecimiento"
+            data-entrada="abajo"
+        >
+            A Dios por ser pieza fundamental en nuestro matrimonio, a nuestros padres y hermanos por ser nuestro apoyo y soporte, y a cada uno de ustedes por acompañarnos en este día tan especial con su presencia y cariño incondicional.
+        </p>
+
+        <!-- MARCO DORADO CON PADRINOS: oculto, los padrinos no vienen en los datos del cliente -->
+        {/*
+        <div class="ag-marco w-full mt-10" id="marco-padrinos" data-entrada="abajo">
+            <span class="ag-etiqueta font-jane-light">Nuestros padrinos</span>
+
+            {
+                padrinos.map((grupo, i) => (
+                    <>
+                        {i > 0 && (
+                            <div class="flex items-center justify-center gap-2 my-5" aria-hidden="true">
+                                <span class="ag-linea-corta"></span>
+                                <span class="ag-puntito"></span>
+                                <span class="ag-linea-corta ag-linea-der"></span>
+                            </div>
+                        )}
+                        <div data-entrada={i % 2 === 0 ? "izq" : "der"}>
+                            <p class="font-jane-light uppercase tracking-[0.15em] text-[#a8874f] text-base mb-1">
+                                {grupo.titulo}
+                            </p>
+                            <p class="font-mollen-light text-[#556b2f]/90 text-base leading-relaxed">
+                                {grupo.nombres.map((n) => (
+                                    <span class="block">{n}</span>
+                                ))}
+                            </p>
+                        </div>
+                    </>
+                ))
+            }
+        </div>
+        */}
+
+    </div>
+</section>
+
+<style>
+
+    .ag-corazon {
+        width: 2.2rem;
+        height: auto;
+        overflow: visible;
+        filter: drop-shadow(0 0 6px rgba(194, 163, 111, 0.55));
+    }
+    .ag-corazon path {
+        stroke: #a8874f;
+        stroke-width: 1.4;
+        stroke-linejoin: round;
+        stroke-dasharray: 1;
+    }
+
+    /* Título con brillo dorado, como los nombres */
+    .ag-titulo {
+        padding: 0 0.2em;
+        background: linear-gradient(110deg, #a8874f 0%, #b5975f 35%, #d6c096 48%, #b5975f 60%, #a8874f 100%);
+        background-size: 250% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        filter: drop-shadow(0 2px 0 rgba(54, 67, 27, 0.14)) drop-shadow(0 8px 12px rgba(54, 67, 27, 0.14));
+        animation: ag-brillo 7s ease-in-out infinite;
+    }
+    @keyframes ag-brillo {
+        0%,
+        100% {
+            background-position: 100% 0;
+        }
+        50% {
+            background-position: 0% 0;
+        }
+    }
+
+    .ag-linea {
+        display: block;
+        height: 1px;
+        width: 3.5rem;
+        background: linear-gradient(90deg, transparent, rgba(168, 135, 79, 0.85));
+        transform-origin: 100% 50%;
+    }
+    .ag-linea-der {
+        background: linear-gradient(90deg, rgba(168, 135, 79, 0.85), transparent);
+        transform-origin: 0% 50%;
+    }
+    .ag-punto {
+        box-shadow: 0 0 8px rgba(85, 107, 47, 0.8);
+    }
+
+    /* Marco de vidrio con borde dorado y línea interior */
+    .ag-marco {
+        position: relative;
+        padding: 2.25rem 1.4rem 1.75rem;
+        border-radius: 18px;
+        border: 2px solid #c2a36f;
+        background: linear-gradient(160deg, rgba(247, 240, 227, 0.85), rgba(255, 252, 246, 0.7));
+        box-shadow:
+            0 24px 40px -24px rgba(54, 67, 27, 0.26),
+            0 0 26px -10px rgba(194, 163, 111, 0.35);
+    }
+    .ag-marco::before {
+        content: "";
+        position: absolute;
+        inset: 6px;
+        border-radius: 12px;
+        border: 1px solid rgba(194, 163, 111, 0.28);
+        pointer-events: none;
+    }
+    .ag-etiqueta {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        white-space: nowrap;
+        padding: 0.3rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #ffffff;
+        background: linear-gradient(180deg, #c9ad7f, #a8874f);
+        box-shadow: 0 4px 10px -3px rgba(54, 67, 27, 0.18);
+    }
+
+    .ag-linea-corta {
+        display: block;
+        height: 1px;
+        width: 2.5rem;
+        background: linear-gradient(90deg, transparent, rgba(168, 135, 79, 0.7));
+    }
+    .ag-puntito {
+        width: 4px;
+        height: 4px;
+        border-radius: 9999px;
+        background: #a8874f;
+        box-shadow: 0 0 6px rgba(194, 163, 111, 0.7);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .ag-titulo {
+            animation: none;
+        }
+    }
+</style>
+
+<script>
+    import { gsap } from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+    import { animarEntradas } from "../scripts/entradas";
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const seccion = document.getElementById("seccion-agradecimiento");
+        if (!seccion) return;
+
+        animarEntradas(seccion);
+
+        // El corazón dorado se dibuja
+        gsap.fromTo(
+            "#corazon-agradecimiento path",
+            { strokeDashoffset: 1 },
+            {
+                strokeDashoffset: 0,
+                duration: 1.8,
+                ease: "power2.inOut",
+                scrollTrigger: {
+                    trigger: "#corazon-agradecimiento",
+                    start: "top 90%",
+                    toggleActions: "play none none reset",
+                },
+            },
+        );
+
+        // Un latido suave de vez en cuando
+        if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            gsap.to("#corazon-agradecimiento path", {
+                scale: 1.12,
+                transformOrigin: "50% 50%",
+                duration: 0.35,
+                ease: "sine.inOut",
+                yoyo: true,
+                repeat: -1,
+                repeatDelay: 2.4,
+                delay: 2.5,
+            });
+        }
+    });
+</script>

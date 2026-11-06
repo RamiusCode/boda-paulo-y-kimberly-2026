@@ -1,0 +1,593 @@
+﻿---
+// Confirmar.astro
+// El botón abre un formulario: el invitado escribe su nombre y elige si asiste.
+// Por ahora es solo el diseño. Para guardar las respuestas en Google Sheets,
+// completar URL_GOOGLE_SHEETS en el script de abajo (función enviarRespuesta).
+---
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 💬 SECCIÓN: CONFIRMA TU ASISTENCIA                          -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="relative w-full pt-10 pb-14 px-6 overflow-hidden" id="seccion-confirmar">
+
+    <!-- COSTADITO DERECHA (decoración floral) -->
+    <img
+        src="/imagenes/costado-der.png"
+        alt="Decoración floral"
+        class="absolute -right-6 top-1/2 w-24 sm:w-28 z-0 pointer-events-none select-none rotate-6"
+        id="costadito-confirmar"
+    />
+
+    <!-- CONTENIDO CENTRADO -->
+    <div class="relative z-10 flex flex-col items-center text-center max-w-xs mx-auto">
+
+        <!-- MENSAJE -->
+        <p
+            class="font-mollen-light text-[#556b2f]/90 text-base sm:text-lg leading-relaxed mb-3"
+            id="texto-confirmar"
+        >
+            Tu presencia hará de este día un momento inolvidable, y nos llenaría de alegría poder compartirlo contigo.
+        </p>
+        <p
+            class="font-jane-light uppercase tracking-[0.15em] text-[#a8874f] text-base sm:text-lg leading-relaxed mb-8"
+            id="subtexto-confirmar"
+        >
+            Por favor, confírmanos tu asistencia
+        </p>
+
+        <!-- BOTÓN CONFIRMAR: abre el formulario -->
+        <button
+            type="button"
+            class="inline-flex items-center justify-center gap-3 px-8 py-3.5 rounded-xl
+                   bg-gradient-to-b from-[#6f8440] to-[#4f6329] text-white
+                   font-jane-light text-base uppercase tracking-[0.15em]
+                   border border-[#556b2f]/20 shadow-lg cursor-pointer
+                   transition-all duration-300 hover:scale-105 active:scale-95"
+            id="btn-confirmar"
+            aria-haspopup="dialog"
+            aria-controls="cf-modal"
+        >
+            <svg class="w-5 h-5 text-white shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                <path d="M3.5 6l8.5 7 8.5-7"></path>
+            </svg>
+            <span>Confirmar asistencia</span>
+        </button>
+
+    </div>
+</section>
+
+<!-- ═══ FORMULARIO DE CONFIRMACIÓN (ventana) ═══ -->
+<div class="cf-modal" id="cf-modal" role="dialog" aria-modal="true" aria-labelledby="cf-titulo" hidden>
+    <div class="cf-tarjeta" id="cf-tarjeta">
+        <span class="cf-linea-interior" aria-hidden="true"></span>
+
+        <button type="button" class="cf-cerrar" id="cf-cerrar" aria-label="Cerrar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+                <path d="M6 6l12 12M18 6L6 18"></path>
+            </svg>
+        </button>
+
+        <!-- PASO 1: el formulario -->
+        <form class="cf-formulario" id="cf-formulario" novalidate>
+            <h3 class="font-great-vibes-local text-[#a8874f] text-4xl leading-tight text-center" id="cf-titulo">
+                Confirma tu asistencia
+            </h3>
+            <div class="flex items-center justify-center gap-2 mt-3 mb-6" aria-hidden="true">
+                <span class="cf-linea"></span>
+                <span class="cf-punto"></span>
+                <span class="cf-linea cf-linea-der"></span>
+            </div>
+
+            <label for="cf-nombre" class="cf-etiqueta font-jane-light">Nombre y apellido</label>
+            <input
+                type="text"
+                id="cf-nombre"
+                name="nombre"
+                class="cf-campo font-mollen-light"
+                placeholder="Escribe tu nombre"
+                autocomplete="name"
+                maxlength="80"
+            />
+            <p class="cf-error font-mollen-light" id="cf-error-nombre" hidden>Por favor, escribe tu nombre</p>
+
+            <p class="cf-etiqueta font-jane-light mt-6">¿Nos acompañas?</p>
+            <div class="cf-opciones" role="radiogroup" aria-label="¿Nos acompañas?">
+                <button type="button" class="cf-opcion font-jane-light" data-respuesta="si" role="radio" aria-checked="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M5 12.5l4.5 4.5L19 7.5"></path>
+                    </svg>
+                    Asistiré
+                </button>
+                <button type="button" class="cf-opcion font-jane-light" data-respuesta="no" role="radio" aria-checked="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+                        <path d="M7 7l10 10M17 7L7 17"></path>
+                    </svg>
+                    No podré asistir
+                </button>
+            </div>
+            <p class="cf-error font-mollen-light" id="cf-error-respuesta" hidden>Elige una opción</p>
+
+            <button type="submit" class="cf-enviar font-jane-light" id="cf-enviar">
+                <span>Enviar respuesta</span>
+            </button>
+
+            <!-- ¿ESTÁS SEGURO? (aparece al tocar Enviar) -->
+            <div class="cf-seguro" id="cf-seguro" hidden>
+                <p class="font-great-vibes-local text-[#a8874f] text-3xl leading-tight">
+                    ¿Estás seguro?
+                </p>
+                <p class="font-mollen-light text-[#556b2f]/90 text-sm leading-relaxed mt-2" id="cf-seguro-texto"></p>
+                <div class="cf-seguro-botones">
+                    <button type="button" class="cf-corregir font-jane-light" id="cf-corregir">Corregir</button>
+                    <button type="button" class="cf-enviar font-jane-light" id="cf-si-enviar">
+                        <span>Sí, enviar</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- PASO 2: agradecimiento -->
+        <div class="cf-gracias text-center" id="cf-gracias" hidden>
+            <svg class="cf-gracias-icono" viewBox="0 0 48 44" fill="none" aria-hidden="true">
+                <path pathLength="1" d="M24 40C24 40 4 27 4 14.5C4 8 9 3.5 14.5 3.5C18.6 3.5 22 6 24 9.5C26 6 29.4 3.5 33.5 3.5C39 3.5 44 8 44 14.5C44 27 24 40 24 40Z"></path>
+            </svg>
+            <h3 class="font-great-vibes-local text-[#a8874f] text-4xl leading-tight mt-3" id="cf-gracias-titulo">
+                ¡Gracias!
+            </h3>
+            <p class="font-mollen-light text-[#556b2f]/90 text-base leading-relaxed mt-3" id="cf-gracias-texto"></p>
+            <button type="button" class="cf-enviar font-jane-light mt-7" id="cf-listo">
+                <span>Listo</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Fondo de la ventana */
+    .cf-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.25rem;
+        background: rgba(30, 37, 17, 0.55);
+        -webkit-backdrop-filter: blur(5px);
+        backdrop-filter: blur(5px);
+    }
+    .cf-modal[hidden] {
+        display: none;
+    }
+
+    /* Tarjeta marfil con borde champán, como las demás de la invitación */
+    .cf-tarjeta {
+        position: relative;
+        width: 100%;
+        max-width: 22rem;
+        max-height: calc(100dvh - 2.5rem);
+        overflow-y: auto;
+        padding: 2.5rem 1.5rem 1.75rem;
+        border-radius: 18px;
+        border: 2px solid #c2a36f;
+        background: linear-gradient(160deg, #fffdf8, #f7f0e3);
+        box-shadow: 0 30px 60px -20px rgba(30, 37, 17, 0.45);
+    }
+    .cf-linea-interior {
+        position: absolute;
+        inset: 6px;
+        border-radius: 12px;
+        border: 1px solid rgba(194, 163, 111, 0.35);
+        pointer-events: none;
+    }
+    .cf-cerrar {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        z-index: 1;
+        width: 2.25rem;
+        height: 2.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        color: #a8874f;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+    .cf-cerrar:hover {
+        background: rgba(168, 135, 79, 0.12);
+    }
+    .cf-cerrar svg {
+        width: 1.2rem;
+        height: 1.2rem;
+    }
+
+    .cf-linea {
+        display: block;
+        height: 1px;
+        width: 3rem;
+        background: linear-gradient(90deg, transparent, rgba(168, 135, 79, 0.85));
+    }
+    .cf-linea-der {
+        background: linear-gradient(90deg, rgba(168, 135, 79, 0.85), transparent);
+    }
+    .cf-punto {
+        width: 4px;
+        height: 4px;
+        border-radius: 9999px;
+        background: #556b2f;
+    }
+
+    .cf-etiqueta {
+        display: block;
+        text-align: left;
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #a8874f;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Campo del nombre: 16px para que el celular no haga zoom */
+    .cf-campo {
+        width: 100%;
+        font-size: 16px;
+        color: #3f4f20;
+        padding: 0.8rem 1rem;
+        border-radius: 12px;
+        border: 1px solid rgba(168, 135, 79, 0.55);
+        background: #ffffff;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .cf-campo::placeholder {
+        color: rgba(85, 107, 47, 0.45);
+    }
+    .cf-campo:focus {
+        border-color: #556b2f;
+        box-shadow: 0 0 0 3px rgba(85, 107, 47, 0.15);
+    }
+
+    /* Asistiré (verde olivo) / No podré asistir (topo): cada uno con su color */
+    .cf-opciones {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.6rem;
+    }
+    .cf-opcion {
+        --tono: #556b2f;
+        --tono-claro: #6f8440;
+        --tono-oscuro: #4f6329;
+        --tono-fondo: rgba(85, 107, 47, 0.08);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.85rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.78rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--tono);
+        background: var(--tono-fondo);
+        border: 1.5px solid var(--tono);
+        box-shadow: 0 4px 10px -6px rgba(54, 67, 27, 0.35);
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+    .cf-opcion[data-respuesta="no"] {
+        --tono: #8a7a68;
+        --tono-claro: #9d8d7b;
+        --tono-oscuro: #766756;
+        --tono-fondo: rgba(138, 122, 104, 0.1);
+    }
+    .cf-opcion svg {
+        width: 1.25rem;
+        height: 1.25rem;
+        color: var(--tono);
+        transition: color 0.25s ease;
+    }
+    .cf-opcion[aria-checked="true"] {
+        color: #ffffff;
+        background: linear-gradient(180deg, var(--tono-claro), var(--tono-oscuro));
+        border-color: var(--tono-oscuro);
+        box-shadow: 0 8px 16px -8px rgba(54, 67, 27, 0.6);
+    }
+    .cf-opcion[aria-checked="true"] svg {
+        color: #ffffff;
+    }
+    /* La opción no elegida se apaga un poco */
+    .cf-opciones:has([aria-checked="true"]) .cf-opcion[aria-checked="false"] {
+        opacity: 0.55;
+    }
+
+    .cf-error {
+        text-align: left;
+        font-size: 0.85rem;
+        color: #9a3b2e;
+        margin-top: 0.4rem;
+    }
+
+    /* Botón enviar en champán oscuro, distinto de las dos opciones */
+    .cf-enviar {
+        position: relative;
+        width: 100%;
+        margin-top: 1.75rem;
+        padding: 0.9rem 1rem;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: #ffffff;
+        background: linear-gradient(180deg, #c4a774, #a8874f);
+        border: 1px solid rgba(168, 135, 79, 0.4);
+        box-shadow: 0 10px 20px -10px rgba(120, 95, 50, 0.6);
+        cursor: pointer;
+        transition: transform 0.15s ease, opacity 0.2s ease;
+    }
+
+    /* "¿Estás seguro?": aparece debajo antes de enviar */
+    .cf-seguro {
+        margin-top: 1.25rem;
+        padding: 1rem;
+        border-radius: 12px;
+        text-align: center;
+        background: rgba(168, 135, 79, 0.08);
+        border: 1px dashed rgba(168, 135, 79, 0.6);
+    }
+    .cf-seguro-botones {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.6rem;
+        margin-top: 0.9rem;
+    }
+    .cf-seguro-botones .cf-enviar {
+        margin-top: 0;
+        padding: 0.75rem 0.5rem;
+        font-size: 0.8rem;
+    }
+    .cf-corregir {
+        padding: 0.75rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: #a8874f;
+        background: #ffffff;
+        border: 1.5px solid rgba(168, 135, 79, 0.7);
+        cursor: pointer;
+    }
+    .cf-enviar:active {
+        transform: scale(0.97);
+    }
+    .cf-enviar:disabled {
+        opacity: 0.7;
+        cursor: default;
+    }
+
+    .cf-gracias-icono {
+        width: 3rem;
+        height: auto;
+        margin: 0 auto;
+    }
+    .cf-gracias-icono path {
+        stroke: #a8874f;
+        stroke-width: 1.5;
+        stroke-dasharray: 1;
+    }
+</style>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🎬 ANIMACIONES CON GSAP                                     -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<script>
+    import { gsap } from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Dirección del Apps Script de Google Sheets. Vacía = solo diseño (no guarda nada).
+    const URL_GOOGLE_SHEETS = "";
+
+    // Envía la respuesta. Cuando se enlace Google Sheets, esto es lo único que se completa.
+    async function enviarRespuesta(datos: { nombre: string; asistira: boolean }) {
+        if (!URL_GOOGLE_SHEETS) return;
+        await fetch(URL_GOOGLE_SHEETS, {
+            method: "POST",
+            mode: "no-cors",
+            body: JSON.stringify({ ...datos, fecha: new Date().toISOString() }),
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#seccion-confirmar",
+                start: "top 85%",
+                toggleActions: "play none none reset",
+            },
+        });
+
+        tl.fromTo(
+            "#costadito-confirmar",
+            { opacity: 0, x: 40 },
+            { opacity: 1, x: 0, duration: 1.2, ease: "power2.out" },
+            0,
+        )
+        .fromTo(
+            ["#texto-confirmar", "#subtexto-confirmar"],
+            { opacity: 0, y: 20 },
+            { opacity: 1, y: 0, duration: 0.9, stagger: 0.15, ease: "sine.out" },
+            0.3,
+        )
+        .fromTo(
+            "#btn-confirmar",
+            { opacity: 0, scale: 0.9 },
+            { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.4)" },
+            0.6,
+        );
+
+        // Pulso suave del botón
+        gsap.to("#btn-confirmar", {
+            scale: 1.04,
+            duration: 1.4,
+            ease: "sine.inOut",
+            yoyo: true,
+            repeat: -1,
+            delay: 1.6,
+        });
+
+        // ═══ FORMULARIO ═══
+        const modal = document.getElementById("cf-modal");
+        const tarjeta = document.getElementById("cf-tarjeta");
+        const formulario = document.getElementById("cf-formulario") as HTMLFormElement | null;
+        const gracias = document.getElementById("cf-gracias");
+        const campoNombre = document.getElementById("cf-nombre") as HTMLInputElement | null;
+        const errorNombre = document.getElementById("cf-error-nombre");
+        const errorRespuesta = document.getElementById("cf-error-respuesta");
+        const botonEnviar = document.getElementById("cf-enviar") as HTMLButtonElement | null;
+        const textoGracias = document.getElementById("cf-gracias-texto");
+        const opciones = Array.from(document.querySelectorAll<HTMLButtonElement>(".cf-opcion"));
+        if (!modal || !tarjeta || !formulario || !gracias || !campoNombre) return;
+
+        let respuesta: "si" | "no" | null = null;
+        let overflowPrevio = "";
+
+        const reiniciar = () => {
+            formulario.reset();
+            respuesta = null;
+            opciones.forEach((o) => o.setAttribute("aria-checked", "false"));
+            if (errorNombre) errorNombre.hidden = true;
+            if (errorRespuesta) errorRespuesta.hidden = true;
+            if (botonEnviar) {
+                botonEnviar.disabled = false;
+                botonEnviar.hidden = false;
+            }
+            const pasoSeguro = document.getElementById("cf-seguro");
+            if (pasoSeguro) pasoSeguro.hidden = true;
+            const siEnviar = document.getElementById("cf-si-enviar") as HTMLButtonElement | null;
+            if (siEnviar) siEnviar.disabled = false;
+            formulario.hidden = false;
+            gracias.hidden = true;
+        };
+
+        const abrir = () => {
+            reiniciar();
+            overflowPrevio = document.body.style.overflow;
+            document.body.style.overflow = "hidden";
+            modal.hidden = false;
+            gsap.fromTo(modal, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" });
+            gsap.fromTo(
+                tarjeta,
+                { opacity: 0, y: 30, scale: 0.94 },
+                { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.3)" },
+            );
+        };
+
+        const cerrar = () => {
+            if (modal.hidden) return;
+            gsap.to(modal, {
+                opacity: 0,
+                duration: 0.25,
+                ease: "power2.in",
+                onComplete: () => {
+                    modal.hidden = true;
+                    document.body.style.overflow = overflowPrevio;
+                },
+            });
+        };
+
+        document.getElementById("btn-confirmar")?.addEventListener("click", abrir);
+        document.getElementById("cf-cerrar")?.addEventListener("click", cerrar);
+        document.getElementById("cf-listo")?.addEventListener("click", cerrar);
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) cerrar();
+        });
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") cerrar();
+        });
+
+        // Elegir Asistiré / No podré asistir
+        opciones.forEach((opcion) => {
+            opcion.addEventListener("click", () => {
+                respuesta = opcion.dataset.respuesta === "si" ? "si" : "no";
+                opciones.forEach((o) => o.setAttribute("aria-checked", String(o === opcion)));
+                if (errorRespuesta) errorRespuesta.hidden = true;
+                gsap.fromTo(opcion, { scale: 0.94 }, { scale: 1, duration: 0.35, ease: "back.out(2)" });
+            });
+        });
+        campoNombre.addEventListener("input", () => {
+            if (errorNombre && campoNombre.value.trim()) errorNombre.hidden = true;
+        });
+
+        // Paso intermedio: "¿Estás seguro?" debajo del botón Enviar
+        const seguro = document.getElementById("cf-seguro");
+        const textoSeguro = document.getElementById("cf-seguro-texto");
+        const botonSiEnviar = document.getElementById("cf-si-enviar") as HTMLButtonElement | null;
+
+        const ocultarSeguro = () => {
+            if (seguro) seguro.hidden = true;
+            if (botonEnviar) botonEnviar.hidden = false;
+        };
+        // Si cambia el nombre o la opción, se vuelve a preguntar
+        campoNombre.addEventListener("input", ocultarSeguro);
+        opciones.forEach((o) => o.addEventListener("click", ocultarSeguro));
+        document.getElementById("cf-corregir")?.addEventListener("click", () => {
+            ocultarSeguro();
+            campoNombre.focus();
+        });
+
+        formulario.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const nombre = campoNombre.value.trim();
+            if (errorNombre) errorNombre.hidden = !!nombre;
+            if (errorRespuesta) errorRespuesta.hidden = !!respuesta;
+            if (!nombre) {
+                campoNombre.focus();
+                return;
+            }
+            if (!respuesta || !seguro) return;
+
+            if (textoSeguro) {
+                textoSeguro.textContent =
+                    respuesta === "si"
+                        ? `${nombre}, vas a confirmar que asistirás a la boda.`
+                        : `${nombre}, vas a avisar que no podrás asistir.`;
+            }
+            if (botonEnviar) botonEnviar.hidden = true;
+            seguro.hidden = false;
+            gsap.fromTo(seguro, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" });
+            seguro.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+
+        botonSiEnviar?.addEventListener("click", async () => {
+            const nombre = campoNombre.value.trim();
+            if (!nombre || !respuesta) return;
+
+            botonSiEnviar.disabled = true;
+            try {
+                await enviarRespuesta({ nombre, asistira: respuesta === "si" });
+            } catch (error) {
+                console.log("No se pudo enviar la confirmación:", error);
+            }
+
+            // Mensaje de gracias según la respuesta
+            if (textoGracias) {
+                textoGracias.textContent =
+                    respuesta === "si"
+                        ? `${nombre}, recibimos tu confirmación. ¡Te esperamos con mucho cariño!`
+                        : `${nombre}, gracias por avisarnos. Te vamos a extrañar en este día tan especial.`;
+            }
+            formulario.hidden = true;
+            gracias.hidden = false;
+            gsap.fromTo(gracias, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" });
+            gsap.fromTo(
+                "#cf-gracias .cf-gracias-icono path",
+                { strokeDashoffset: 1 },
+                { strokeDashoffset: 0, duration: 1.4, ease: "power2.inOut" },
+            );
+        });
+    });
+</script>

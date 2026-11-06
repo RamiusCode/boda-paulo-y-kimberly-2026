@@ -1,0 +1,360 @@
+---
+// Fotos2.astro
+// Encuadre por foto: las apaisadas se corren para no cortar las caras
+const fotos = [
+    { src: "/imagenes/pk-foto1.jpg", pos: "center 45%" },
+    { src: "/imagenes/pk-foto2.jpg", pos: "center 40%" },
+    { src: "/imagenes/pk-foto4.jpg", pos: "center 20%" },
+    { src: "/imagenes/pk-foto5.jpg", pos: "45% center" },
+    { src: "/imagenes/pk-foto6.jpg", pos: "center 40%" },
+    { src: "/imagenes/pk-foto3.jpg", pos: "center 25%" },
+];
+---
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 📸 SECCIÓN: NOSOTROS - CARRUSEL + GALERÍA                   -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="relative w-full pt-10 pb-14 px-5 overflow-hidden" id="seccion-fotos2">
+
+    <!-- TÍTULO -->
+    <h2
+        class="font-romantic-lovely text-[#a8874f] text-5xl sm:text-6xl text-center mb-8"
+        id="titulo-nosotros"
+    >
+        Nosotros
+    </h2>
+
+    <!-- CARRUSEL PRINCIPAL (auto-rotativo) -->
+    <div class="relative w-full max-w-sm mx-auto mb-4" id="carrusel-nosotros">
+        <div class="relative w-full aspect-[3/4] rounded-xl overflow-hidden shadow-2xl border border-[#c2a36f]/40 cursor-zoom-in" id="carrusel-marco" role="button" tabindex="0" aria-label="Ver foto en grande">
+            {
+                fotos.map((foto, i) => (
+                    <img
+                        src={foto.src}
+                        alt={`Foto ${i + 1}`}
+                        class="carrusel-img absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
+                        style={`opacity: ${i === 0 ? 1 : 0}; object-position: ${foto.pos};`}
+                        data-index={i}
+                    />
+                ))
+            }
+        </div>
+    </div>
+
+    <!-- GALERÍA (3 por fila, última fila centrada, miniaturas chuecas superpuestas) -->
+    <div
+        class="relative z-20 flex flex-wrap justify-center gap-x-2 gap-y-3 max-w-md mx-auto -mt-[15%]"
+        id="galeria-scattered"
+    >
+        {
+            fotos.map((foto, i) => {
+                const rotaciones = [-6, 4, -3, 5, -5, 3, -4, 6, -2, 4, -6];
+                const rot = rotaciones[i % rotaciones.length];
+                return (
+                    <div
+                        class="galeria-item w-[calc((100%-1rem)/3)] rounded-md overflow-hidden shadow-xl border-2 border-[#556b2f]/80 cursor-zoom-in"
+                        role="button"
+                        tabindex="0"
+                        aria-label={`Ver foto ${i + 1} en grande`}
+                        style={`transform: rotate(${rot}deg);`}
+                        data-rot={rot}
+                        data-gindex={i}
+                    >
+                        <img
+                            src={foto.src}
+                            alt={`Galería ${i + 1}`}
+                            style={`object-position: ${foto.pos};`}
+                            class="w-full aspect-[3/4] object-cover"
+                            loading="lazy"
+                        />
+                    </div>
+                );
+            })
+        }
+    </div>
+</section>
+
+<!-- ═══ VISOR: la foto tocada se abre en grande ═══ -->
+<div class="visor-fotos" id="visor-fotos" role="dialog" aria-modal="true" aria-label="Foto en grande" hidden>
+    <button class="visor-boton visor-cerrar" id="visor-cerrar" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18"></path>
+        </svg>
+    </button>
+    <button class="visor-boton visor-flecha visor-ant" id="visor-ant" aria-label="Foto anterior">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M15 5l-7 7 7 7"></path>
+        </svg>
+    </button>
+    <img class="visor-img" id="visor-img" alt="Foto en grande" />
+    <button class="visor-boton visor-flecha visor-sig" id="visor-sig" aria-label="Foto siguiente">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9 5l7 7-7 7"></path>
+        </svg>
+    </button>
+    <p class="visor-contador font-jane-light" id="visor-contador"></p>
+</div>
+
+<style>
+    .visor-fotos {
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(30, 37, 17, 0.9);
+        -webkit-backdrop-filter: blur(6px);
+        backdrop-filter: blur(6px);
+        touch-action: pan-y;
+    }
+    .visor-fotos[hidden] {
+        display: none;
+    }
+    .visor-img {
+        max-width: 92vw;
+        max-height: 80dvh;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        border-radius: 14px;
+        border: 2px solid rgba(201, 173, 127, 0.85);
+        box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.6);
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+    .visor-boton {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        border-radius: 9999px;
+        color: #f7f0e3;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(201, 173, 127, 0.7);
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+    .visor-boton:hover {
+        background: rgba(255, 255, 255, 0.22);
+    }
+    .visor-boton svg {
+        width: 1.3rem;
+        height: 1.3rem;
+    }
+    .visor-cerrar {
+        top: max(1rem, env(safe-area-inset-top));
+        right: 1rem;
+    }
+    .visor-flecha {
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    .visor-ant {
+        left: 0.6rem;
+    }
+    .visor-sig {
+        right: 0.6rem;
+    }
+    .visor-contador {
+        position: absolute;
+        bottom: max(1.25rem, env(safe-area-inset-bottom));
+        left: 0;
+        right: 0;
+        text-align: center;
+        color: #e2d2b0;
+        font-size: 0.85rem;
+        letter-spacing: 0.3em;
+    }
+</style>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 🎬 SCRIPT: CARRUSEL + ANIMACIONES GSAP                      -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<script>
+    import { gsap } from "gsap";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // ═══ CARRUSEL AUTO-ROTATIVO ═══
+        const imgs = Array.from(
+            document.querySelectorAll<HTMLImageElement>(".carrusel-img"),
+        );
+        let actual = 0;
+
+        function mostrar(indice: number) {
+            imgs.forEach((img, i) => {
+                img.style.opacity = i === indice ? "1" : "0";
+            });
+        }
+
+        if (imgs.length > 0) {
+            setInterval(() => {
+                actual = (actual + 1) % imgs.length;
+                mostrar(actual);
+            }, 2800);
+        }
+
+        // ═══ TÍTULO ═══
+        gsap.fromTo(
+            "#titulo-nosotros",
+            { opacity: 0, y: -20 },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                ease: "power2.out",
+                scrollTrigger: {
+                    trigger: "#seccion-fotos2",
+                    start: "top 85%",
+                    toggleActions: "play none none reset",
+                },
+            },
+        );
+
+        // ═══ CARRUSEL ENTRADA ═══
+        gsap.fromTo(
+            "#carrusel-nosotros",
+            { opacity: 0, scale: 0.9 },
+            {
+                opacity: 1,
+                scale: 1,
+                duration: 1.2,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: "#carrusel-nosotros",
+                    start: "top 85%",
+                    toggleActions: "play none none reset",
+                },
+            },
+        );
+
+        // ═══ GALERÍA: rotación ligada al scroll ═══
+        // Entra rotada → se alinea (0°) en el centro → rota en sentido contrario al salir
+        const items = Array.from(
+            document.querySelectorAll<HTMLElement>(".galeria-item"),
+        );
+        items.forEach((item) => {
+            const rot = Number(item.dataset.rot ?? 0);
+            gsap.fromTo(
+                item,
+                { rotation: rot },
+                {
+                    rotation: -rot,
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: item,
+                        start: "top bottom",
+                        end: "bottom top",
+                        scrub: 1,
+                    },
+                },
+            );
+        });
+
+        // ═══ VISOR: tocar una foto la abre en grande ═══
+        const visor = document.getElementById("visor-fotos");
+        const visorImg = document.getElementById("visor-img") as HTMLImageElement | null;
+        const visorContador = document.getElementById("visor-contador");
+        const fuentes = imgs.map((img) => img.getAttribute("src") ?? "");
+        let enVisor = 0;
+        let overflowPrevio = "";
+
+        const pintar = (indice: number, animar = true) => {
+            if (!visorImg || fuentes.length === 0) return;
+            enVisor = (indice + fuentes.length) % fuentes.length;
+            const poner = () => {
+                visorImg.src = fuentes[enVisor];
+                if (visorContador) visorContador.textContent = `${enVisor + 1} / ${fuentes.length}`;
+            };
+            if (!animar) return poner();
+            gsap.to(visorImg, {
+                opacity: 0,
+                duration: 0.15,
+                onComplete: () => {
+                    poner();
+                    gsap.to(visorImg, { opacity: 1, duration: 0.25 });
+                },
+            });
+        };
+
+        const abrir = (indice: number) => {
+            if (!visor || !visorImg) return;
+            pintar(indice, false);
+            overflowPrevio = document.body.style.overflow;
+            document.body.style.overflow = "hidden";
+            visor.hidden = false;
+            gsap.fromTo(visor, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" });
+            gsap.fromTo(
+                visorImg,
+                { opacity: 0, scale: 0.85 },
+                { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1.4)" },
+            );
+        };
+
+        const cerrar = () => {
+            if (!visor || visor.hidden) return;
+            gsap.to(visor, {
+                opacity: 0,
+                duration: 0.25,
+                ease: "power2.in",
+                onComplete: () => {
+                    visor.hidden = true;
+                    document.body.style.overflow = overflowPrevio;
+                },
+            });
+        };
+
+        const alActivar = (el: HTMLElement, indice: () => number) => {
+            el.addEventListener("click", () => abrir(indice()));
+            el.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    abrir(indice());
+                }
+            });
+        };
+
+        items.forEach((item, i) => alActivar(item, () => i));
+        const marco = document.getElementById("carrusel-marco");
+        if (marco) alActivar(marco, () => actual);
+
+        document.getElementById("visor-cerrar")?.addEventListener("click", cerrar);
+        document.getElementById("visor-ant")?.addEventListener("click", (e) => {
+            e.stopPropagation();
+            pintar(enVisor - 1);
+        });
+        document.getElementById("visor-sig")?.addEventListener("click", (e) => {
+            e.stopPropagation();
+            pintar(enVisor + 1);
+        });
+        // Tocar afuera de la foto también cierra
+        visor?.addEventListener("click", (e) => {
+            if (e.target === visor) cerrar();
+        });
+        document.addEventListener("keydown", (e) => {
+            if (!visor || visor.hidden) return;
+            if (e.key === "Escape") cerrar();
+            if (e.key === "ArrowLeft") pintar(enVisor - 1);
+            if (e.key === "ArrowRight") pintar(enVisor + 1);
+        });
+
+        // Deslizar con el dedo para pasar de foto
+        let inicioX = 0;
+        visor?.addEventListener(
+            "touchstart",
+            (e) => {
+                inicioX = e.touches[0].clientX;
+            },
+            { passive: true },
+        );
+        visor?.addEventListener("touchend", (e) => {
+            const dx = e.changedTouches[0].clientX - inicioX;
+            if (Math.abs(dx) > 50) pintar(enVisor + (dx < 0 ? 1 : -1));
+        });
+    });
+</script>
