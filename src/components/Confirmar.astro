@@ -14,7 +14,7 @@
     <img
         src="/imagenes/costado-der.png"
         alt="Decoración floral"
-        class="absolute -right-6 top-1/2 w-24 sm:w-28 z-0 pointer-events-none select-none rotate-6"
+        class="absolute -right-10 top-1/2 w-24 sm:w-28 z-0 pointer-events-none select-none rotate-6"
         id="costadito-confirmar"
     />
 
@@ -29,11 +29,27 @@
             Tu presencia hará de este día un momento inolvidable, y nos llenaría de alegría poder compartirlo contigo.
         </p>
         <p
-            class="font-jane-light uppercase tracking-[0.15em] text-[#a8874f] text-base sm:text-lg leading-relaxed mb-8"
+            class="font-jane-light uppercase tracking-[0.15em] text-[#a8874f] text-base sm:text-lg leading-relaxed mb-4"
             id="subtexto-confirmar"
         >
             Por favor, confírmanos tu asistencia
         </p>
+
+        <!-- FECHA LÍMITE PARA CONFIRMAR -->
+        <!-- Rectángulo con trazo champán; angosto para que la flor de la derecha no lo tape -->
+        <div class="cf-limite mb-8" id="fecha-limite-confirmar">
+            <svg class="w-6 h-6 text-[#a8874f] mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3.5" y="5" width="17" height="15" rx="2"></rect>
+                <path d="M3.5 9.5h17M8 3v4M16 3v4"></path>
+                <path d="M12 17.2s-2.6-1.6-2.6-3.3c0-.8.6-1.4 1.3-1.4.6 0 1 .3 1.3.8.3-.5.7-.8 1.3-.8.7 0 1.3.6 1.3 1.4 0 1.7-2.6 3.3-2.6 3.3z" fill="currentColor" stroke="none"></path>
+            </svg>
+            <p class="font-jane-light uppercase tracking-[0.15em] text-[#a8874f] text-sm leading-relaxed">
+                Hasta antes del
+            </p>
+            <p class="font-jane-light uppercase tracking-[0.15em] text-[#556b2f] text-base leading-relaxed">
+                lunes 16 de noviembre
+            </p>
+        </div>
 
         <!-- BOTÓN CONFIRMAR: abre el formulario -->
         <button
@@ -144,6 +160,27 @@
 </div>
 
 <style>
+    /* Fecha límite dentro de un rectángulo de trazo champán, con línea interior */
+    .cf-limite {
+        position: relative;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 15.5rem;
+        padding: 0.9rem 1.4rem 1rem;
+        border: 1px solid rgba(168, 135, 79, 0.75);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.55);
+    }
+    .cf-limite::before {
+        content: "";
+        position: absolute;
+        inset: 4px;
+        border: 1px solid rgba(168, 135, 79, 0.25);
+        border-radius: 7px;
+        pointer-events: none;
+    }
+
     /* Fondo de la ventana */
     .cf-modal {
         position: fixed;
@@ -417,7 +454,7 @@
             0,
         )
         .fromTo(
-            ["#texto-confirmar", "#subtexto-confirmar"],
+            ["#texto-confirmar", "#subtexto-confirmar", "#fecha-limite-confirmar"],
             { opacity: 0, y: 20 },
             { opacity: 1, y: 0, duration: 0.9, stagger: 0.15, ease: "sine.out" },
             0.3,

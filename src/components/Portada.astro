@@ -89,7 +89,7 @@
                         class="portada-item flex items-center justify-center gap-3 mb-4 sm:mb-6"
                     >
                         <span class="portada-linea"></span>
-                        <span class="portada-adorno">&#10047;</span>
+                        <span class="portada-adorno" aria-hidden="true"><svg viewBox="0 0 24 22"><path d="M12 20.5S2 14.2 2 7.6C2 4.5 4.4 2 7.3 2c2 0 3.7 1.1 4.7 2.8C13 3.1 14.7 2 16.7 2 19.6 2 22 4.5 22 7.6c0 6.6-10 12.9-10 12.9z"/></svg></span>
                         <span class="portada-linea portada-linea-der"></span>
                     </div>
 
@@ -532,9 +532,14 @@
         background: linear-gradient(90deg, #c2a36f, transparent);
     }
     .portada-adorno {
+        display: inline-flex;
         color: #c2a36f;
-        font-size: 1.1rem;
-        text-shadow: 0 0 10px rgba(194, 163, 111, 0.7);
+        filter: drop-shadow(0 0 4px rgba(194, 163, 111, 0.6));
+    }
+    .portada-adorno svg {
+        width: 1.05rem;
+        height: auto;
+        fill: currentColor;
     }
 
     /* ── Nombres con brillo dorado en relieve ── */

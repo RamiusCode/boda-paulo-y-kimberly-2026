@@ -83,6 +83,16 @@
   font-family: 'Great Vibes Local', cursive !important;
 }
 
+/* Títulos de sección: todos en Great Vibes y del mismo tamaño.
+   El tamaño se define solo acá; para cambiarlo, se cambia en este lugar. */
+.titulo-seccion {
+  font-family: 'Great Vibes Local', cursive;
+  font-size: clamp(2.75rem, 12vw, 3.5rem);
+  line-height: 1.15;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
 
 
 
