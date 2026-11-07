@@ -20,14 +20,15 @@
         <!-- ÍCONO dentro de un doble aro dorado -->
         <div class="sa-icono mb-4" id="icono-adultos" data-entrada="giro">
             <svg viewBox="0 0 100 100" fill="none" aria-hidden="true">
+                <circle class="sa-fondo" cx="50" cy="50" r="40"></circle>
                 <circle class="sa-aro" pathLength="1" cx="50" cy="50" r="47"></circle>
                 <circle class="sa-aro sa-aro-fino" pathLength="1" cx="50" cy="50" r="42"></circle>
             </svg>
             <img
                 src="/imagenes/restriccion.png"
                 alt="Solo adultos"
-                class="w-11 h-11 object-contain relative"
-                style="filter: brightness(0) saturate(100%) invert(51%) sepia(30%) saturate(550%) hue-rotate(0deg) brightness(100%);"
+                class="w-14 h-14 object-contain relative"
+                style="filter: brightness(0) saturate(100%) invert(45%) sepia(30%) saturate(600%) hue-rotate(30deg) brightness(78%) drop-shadow(0 0 0.5px #556b2f) drop-shadow(0 0 0.5px #556b2f);"
             />
         </div>
 
@@ -66,8 +67,8 @@
 <style>
     .sa-icono {
         position: relative;
-        width: 5rem;
-        height: 5rem;
+        width: 6.25rem;
+        height: 6.25rem;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -79,14 +80,19 @@
         height: 100%;
         transform: rotate(-90deg);
     }
+    /* Ícono "no niños" más visible: verde olivo, aros gruesos y fondo marfil */
+    .sa-fondo {
+        fill: #f7f0e3;
+        stroke: none;
+    }
     .sa-aro {
-        stroke: #a8874f;
-        stroke-width: 1;
+        stroke: #556b2f;
+        stroke-width: 2.4;
         stroke-dasharray: 1;
     }
     .sa-aro-fino {
-        stroke: rgba(168, 135, 79, 0.45);
-        stroke-width: 0.6;
+        stroke: #a8874f;
+        stroke-width: 1.2;
     }
 
     /* Título con brillo dorado, como los nombres */

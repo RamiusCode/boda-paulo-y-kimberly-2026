@@ -13,35 +13,8 @@ const { numeroPases = 1, nombreInvitado = "Nombre del invitado" } = Astro.props;
 const personas = Array.from({ length: Math.min(numeroPases, 8) });
 ---
 
-<section class="relative w-full pt-14 pb-12 px-6 overflow-hidden" id="seccion-pase">
+<section class="relative w-full pt-8 pb-12 px-6 overflow-hidden" id="seccion-pase">
     <div class="pa-escena relative max-w-xs mx-auto" id="card-pase">
-
-        <!-- SELLO DE LACRE -->
-        <div class="pa-sello" id="sello-pase" aria-hidden="true">
-            <svg viewBox="0 0 80 80">
-                <defs>
-                    <radialGradient id="pa-lacre" cx="38%" cy="32%" r="75%">
-                        <stop offset="0%" stop-color="#6f8440"></stop>
-                        <stop offset="55%" stop-color="#4f6329"></stop>
-                        <stop offset="100%" stop-color="#36431b"></stop>
-                    </radialGradient>
-                </defs>
-                <!-- Borde irregular del lacre -->
-                <path
-                    fill="url(#pa-lacre)"
-                    d="M40 2c4 0 6 3 9.5 3.6s7-1.4 10 .8 3 5.8 5.6 8.3 6.6 2.5 8 6-1 6.6-.4 10.3 4 6 3.3 9.7-4.6 5-5.8 8.6.6 7.6-1.9 10.4-6.6 2-9.7 4.1-4.3 6.3-8 7.4-6.8-1.6-10.6-1.6-6.7 2.6-10.4 1.6-4.9-5.3-8-7.4-7.2-1.3-9.7-4.1-.7-6.8-1.9-10.4-5.1-4.9-5.8-8.6 2.7-6 3.3-9.7-1.8-6.8-.4-10.3 5.4-3.5 8-6 2.6-6.1 5.6-8.3 6.5-.2 10-.8S36 2 40 2z"
-                ></path>
-                <circle cx="40" cy="40" r="25" fill="none" stroke="rgba(255,226,190,0.45)" stroke-width="1.2"></circle>
-                <circle cx="40" cy="40" r="21" fill="none" stroke="rgba(54, 67, 27, 0.14)" stroke-width="0.8"></circle>
-                <!-- Corazón en relieve -->
-                <path
-                    d="M40 52s-11-7-11-14.2c0-3.6 2.7-6.3 6-6.3 2.2 0 4 1.2 5 3 1-1.8 2.8-3 5-3 3.3 0 6 2.7 6 6.3C51 45 40 52 40 52z"
-                    fill="rgba(255,226,190,0.85)"
-                    stroke="rgba(54, 67, 27, 0.14)"
-                    stroke-width="0.8"
-                ></path>
-            </svg>
-        </div>
 
         <!-- TARJETA -->
         <div class="pa-tarjeta" id="card-principal-pase">
@@ -50,7 +23,7 @@ const personas = Array.from({ length: Math.min(numeroPases, 8) });
             <div class="relative flex flex-col items-center text-center">
                 <!-- BIENVENIDA -->
                 <p
-                    class="font-jane-light uppercase tracking-[0.2em] text-[#556b2f] text-sm"
+                    class="font-jane-light uppercase tracking-[0.2em] text-[#a8874f] text-lg sm:text-xl"
                     id="bienvenida-pase"
                     data-entrada="abajo"
                 >
@@ -59,7 +32,7 @@ const personas = Array.from({ length: Math.min(numeroPases, 8) });
 
                 <!-- NOMBRE DEL INVITADO (baja de renglón si es largo) -->
                 <h2
-                    class="pa-nombre font-great-vibes-local leading-tight mt-3"
+                    class="pa-nombre font-jane-light uppercase leading-snug mt-4"
                     id="nombre-invitado-pase"
                     data-entrada="desenfoque"
                 >
@@ -117,30 +90,14 @@ const personas = Array.from({ length: Math.min(numeroPases, 8) });
         perspective: 1000px;
     }
 
-    /* Sello de lacre que se estampa arriba */
-    .pa-sello {
-        position: absolute;
-        top: -2.4rem;
-        left: 50%;
-        width: 4.75rem;
-        height: 4.75rem;
-        margin-left: -2.375rem;
-        z-index: 30;
-        filter: drop-shadow(0 8px 10px rgba(54, 67, 27, 0.18));
-    }
-    .pa-sello svg {
-        width: 100%;
-        height: 100%;
-    }
-
-    /* Tarjeta de vidrio azul con borde dorado */
+    /* Tarjeta marfil con marco verde olivo y línea interior champán */
     .pa-tarjeta {
         position: relative;
         overflow: hidden;
-        padding: 3.25rem 1.5rem 2.25rem;
+        padding: 2.5rem 1.5rem 2.25rem;
         border-radius: 18px;
-        border: 2px solid #c2a36f;
-        background: linear-gradient(160deg, rgba(247, 240, 227, 0.85), rgba(255, 252, 246, 0.7));
+        border: 2px solid #556b2f;
+        background: linear-gradient(160deg, rgba(255, 253, 248, 0.95), rgba(247, 240, 227, 0.9));
         box-shadow:
             0 24px 40px -24px rgba(54, 67, 27, 0.26),
             0 0 26px -10px rgba(194, 163, 111, 0.35);
@@ -150,39 +107,40 @@ const personas = Array.from({ length: Math.min(numeroPases, 8) });
         position: absolute;
         inset: 6px;
         border-radius: 12px;
-        border: 1px solid rgba(194, 163, 111, 0.28);
+        border: 1px solid rgba(168, 135, 79, 0.55);
         pointer-events: none;
     }
-    /* Nombre en dorado; puede ocupar dos renglones */
+    /* Nombre en verde olivo, misma letra que "Con mucho cariño para"; puede ocupar dos renglones */
     .pa-nombre {
-        font-size: 2.6rem;
+        font-size: 1.6rem;
+        letter-spacing: 0.12em;
         padding: 0 0.15em;
         overflow-wrap: break-word;
-        color: #a8874f;
+        color: #556b2f;
     }
 
     .pa-linea {
         display: block;
         height: 1px;
         width: 3.5rem;
-        background: linear-gradient(90deg, transparent, rgba(168, 135, 79, 0.85));
+        background: linear-gradient(90deg, transparent, rgba(85, 107, 47, 0.8));
         transform-origin: 100% 50%;
     }
     .pa-linea-der {
-        background: linear-gradient(90deg, rgba(168, 135, 79, 0.85), transparent);
+        background: linear-gradient(90deg, rgba(85, 107, 47, 0.8), transparent);
         transform-origin: 0% 50%;
     }
     .pa-punto {
         width: 5px;
         height: 5px;
         border-radius: 9999px;
-        background: #556b2f;
-        box-shadow: 0 0 6px rgba(85, 107, 47, 0.8);
+        background: #a8874f;
+        box-shadow: 0 0 6px rgba(168, 135, 79, 0.8);
     }
 
     .pa-numero {
         font-size: 4.5rem;
-        color: #556b2f;
+        color: #a8874f;
     }
 
     .pa-persona {
@@ -192,9 +150,9 @@ const personas = Array.from({ length: Math.min(numeroPases, 8) });
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #b5975f;
-        background: rgba(247, 240, 227, 0.85);
-        border: 1px solid rgba(168, 135, 79, 0.55);
+        color: #556b2f;
+        background: #ffffff;
+        border: 1.5px solid rgba(85, 107, 47, 0.6);
         box-shadow: 0 6px 12px -6px rgba(54, 67, 27, 0.21);
     }
     .pa-persona svg {
@@ -226,13 +184,6 @@ const personas = Array.from({ length: Math.min(numeroPases, 8) });
             "#card-principal-pase",
             { opacity: 0, rotationX: 35, y: 60, transformOrigin: "50% 100%" },
             { opacity: 1, rotationX: 0, y: 0, duration: 1.3, ease: "power3.out", scrollTrigger: disparo },
-        );
-
-        // El sello cae y se estampa
-        gsap.fromTo(
-            "#sello-pase",
-            { opacity: 0, scale: 2.2, rotation: -40 },
-            { opacity: 1, scale: 1, rotation: 0, duration: 0.7, ease: "back.out(2.4)", delay: 0.8, scrollTrigger: disparo },
         );
 
         animarEntradas(seccion);

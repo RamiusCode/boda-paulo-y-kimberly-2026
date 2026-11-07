@@ -4,7 +4,8 @@ import Layout from "../layouts/Layout.astro";
 
 import Portada from "../components/Portada.astro";
 import NombresFlores from "../components/NombresFlores.astro";
-// import Pase from "../components/Pase.astro"; // oculto por ahora: se activa cuando se conecte al sistema de invitados
+import Pase from "../components/Pase.astro";
+import { INVITADO_MUESTRA } from "../scripts/invitado";
 import Contador from "../components/Contador.astro";
 import NombresPadres from "../components/NombresPadres.astro";
 import Calendario from "../components/Calendario.astro";
@@ -23,7 +24,7 @@ import Despedida from "../components/Despedida.astro";
 <Layout title="Boda de Paulo y Kimberly">
     <Portada />
     <NombresFlores />
-    {/* <Pase numeroPases={1} nombreInvitado="Nombre del invitado" /> */}
+    <Pase numeroPases={INVITADO_MUESTRA.pases} nombreInvitado={INVITADO_MUESTRA.nombre} />
     <Contador />
     <NombresPadres />
     <Calendario />
