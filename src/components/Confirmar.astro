@@ -1,9 +1,9 @@
 ﻿---
 // Confirmar.astro
 // El botón abre la ventana de confirmación con el nombre del invitado y sus pases.
-// Por ahora es solo el diseño con un invitado de muestra (src/scripts/invitado.ts).
-// Cuando se conecte al sistema, el nombre y los pases llegan desde la base y la
-// respuesta se envía en la función enviarRespuesta del script de abajo.
+// Conectado al sistema de invitados: con ?i=codigo en el link, el nombre y los
+// pases vienen de la base y la respuesta se guarda ahí (src/lib/invitado.ts).
+// Sin código se ve el invitado de muestra (src/scripts/invitado.ts).
 import { INVITADO_MUESTRA } from "../scripts/invitado";
 import { frasePasesReservados } from "../scripts/pases";
 
@@ -117,14 +117,15 @@ const opcionesCantidad = Array.from({ length: Math.min(invitado.pases, 8) }, (_,
                 <span class="cf-linea cf-linea-der"></span>
             </div>
 
-            <p class="font-mollen-light text-[#556b2f] text-base">
+            <p class="font-mollen-light text-[#556b2f] text-base" id="cf-frase-pases">
                 {frase.antes} <strong class="cf-resaltado">{frase.numero}</strong> {frase.despues}
             </p>
 
+            <div id="cf-caja-cuantos">
             <p class="font-jane-light uppercase tracking-[0.15em] text-[#a8874f] text-xs mt-5 mb-3">
                 ¿Cuántos asistirán?
             </p>
-            <div class="cf-cantidades" role="radiogroup" aria-label="¿Cuántos asistirán?">
+            <div class="cf-cantidades" id="cf-cantidades" role="radiogroup" aria-label="¿Cuántos asistirán?">
                 {
                     opcionesCantidad.map((n) => (
                         <button
@@ -138,6 +139,7 @@ const opcionesCantidad = Array.from({ length: Math.min(invitado.pases, 8) }, (_,
                         </button>
                     ))
                 }
+            </div>
             </div>
 
             <button type="button" class="cf-principal font-jane-light" id="cf-confirmar">
@@ -165,7 +167,7 @@ const opcionesCantidad = Array.from({ length: Math.min(invitado.pases, 8) }, (_,
             <svg class="cf-gracias-icono" viewBox="0 0 48 44" fill="none" aria-hidden="true">
                 <path pathLength="1" d="M24 40C24 40 4 27 4 14.5C4 8 9 3.5 14.5 3.5C18.6 3.5 22 6 24 9.5C26 6 29.4 3.5 33.5 3.5C39 3.5 44 8 44 14.5C44 27 24 40 24 40Z"></path>
             </svg>
-            <h3 class="font-great-vibes-local text-[#a8874f] text-4xl leading-tight mt-3">
+            <h3 class="font-great-vibes-local text-[#a8874f] text-4xl leading-tight mt-3" id="cf-gracias-titulo">
                 ¡Gracias!
             </h3>
             <p class="font-mollen-light text-[#556b2f]/90 text-base leading-relaxed mt-3" id="cf-gracias-texto"></p>
@@ -393,15 +395,15 @@ const opcionesCantidad = Array.from({ length: Math.min(invitado.pases, 8) }, (_,
 <script>
     import { gsap } from "gsap";
     import { ScrollTrigger } from "gsap/ScrollTrigger";
-    import { textoPersonas } from "../scripts/pases";
+    import { textoPersonas, frasePasesReservados } from "../scripts/pases";
+    import { datosInvitado, confirmarAsistencia, alCambiarInvitado, type Invitado } from "../lib/invitado";
 
     gsap.registerPlugin(ScrollTrigger);
 
-    // Envía la respuesta. Por ahora es solo diseño: cuando se conecte al sistema
-    // de invitados, acá se manda la confirmación a la base.
-    async function enviarRespuesta(_datos: { nombre: string; asistira: boolean; cantidad: number }) {
-        return;
-    }
+    // La respuesta se guarda en la fila del propio invitado, identificado por el
+    // código del link (?i=k7m2p): nadie puede confirmar por otro. Si el link no
+    // trae código o la base no responde, la ventana igual agradece: la
+    // invitación nunca se rompe delante del invitado.
 
     document.addEventListener("DOMContentLoaded", () => {
         const tl = gsap.timeline({
@@ -448,23 +450,33 @@ const opcionesCantidad = Array.from({ length: Math.min(invitado.pases, 8) }, (_,
         const gracias = document.getElementById("cf-gracias");
         const seguro = document.getElementById("cf-seguro");
         const textoSeguro = document.getElementById("cf-seguro-texto");
+        const tituloGracias = document.getElementById("cf-gracias-titulo");
         const textoGracias = document.getElementById("cf-gracias-texto");
         const botonConfirmar = document.getElementById("cf-confirmar");
         const botonNo = document.getElementById("cf-no-asistire");
         const botonSiEnviar = document.getElementById("cf-si-enviar") as HTMLButtonElement | null;
-        const cantidades = Array.from(document.querySelectorAll<HTMLButtonElement>(".cf-cantidad"));
+        const nombreEl = document.getElementById("cf-nombre");
+        const fraseEl = document.getElementById("cf-frase-pases");
+        const cajaCuantos = document.getElementById("cf-caja-cuantos");
+        const contCantidades = document.getElementById("cf-cantidades");
         if (!modal || !tarjeta || !paso1 || !gracias || !seguro) return;
 
-        const nombre = modal.dataset.nombre ?? "";
-        const pases = Number(modal.dataset.pases ?? 1);
+        let nombre = modal.dataset.nombre ?? "";
+        let pases = Number(modal.dataset.pases ?? 1);
         let cantidad = pases;
         let asistira = true;
+        // ¿El invitado eligió una cantidad a mano? Mientras no lo haga, la
+        // cantidad SIGUE a los pases: si los novios corrigen de 4 a 5, confirma 5.
+        let eligioAMano = false;
+        // Respuesta ya guardada en la base (al volver a entrar por su link)
+        let respuestaPrevia: { confirmado: boolean; asisten: number } | null = null;
         let overflowPrevio = "";
 
-        const marcarCantidad = (n: number) => {
-            cantidad = n;
-            cantidades.forEach((c) =>
-                c.setAttribute("aria-checked", String(Number(c.dataset.cantidad) === n)),
+        const plantillaCantidad = contCantidades?.querySelector(".cf-cantidad")?.cloneNode(true) as HTMLButtonElement | undefined;
+
+        const marcarCantidad = () => {
+            contCantidades?.querySelectorAll<HTMLButtonElement>(".cf-cantidad").forEach((c) =>
+                c.setAttribute("aria-checked", String(Number(c.dataset.cantidad) === cantidad)),
             );
         };
 
@@ -474,10 +486,68 @@ const opcionesCantidad = Array.from({ length: Math.min(invitado.pases, 8) }, (_,
             if (botonNo) botonNo.hidden = false;
         };
 
+        // Un círculo por pase (hasta 8); el elegido queda marcado
+        const pintarCantidades = () => {
+            if (!contCantidades || !plantillaCantidad) return;
+            const botones = Array.from({ length: Math.min(pases, 8) }, (_, i) => {
+                const b = plantillaCantidad.cloneNode(true) as HTMLButtonElement;
+                b.dataset.cantidad = String(i + 1);
+                b.textContent = String(i + 1);
+                b.addEventListener("click", () => {
+                    cantidad = i + 1;
+                    eligioAMano = true;
+                    marcarCantidad();
+                    ocultarSeguro();
+                    gsap.fromTo(b, { scale: 0.9 }, { scale: 1, duration: 0.35, ease: "back.out(2)" });
+                });
+                return b;
+            });
+            contCantidades.replaceChildren(...botones);
+            marcarCantidad();
+        };
+
+        // "Tienes N pases reservados." desde la función compartida de pases.ts
+        const pintarFrase = () => {
+            if (!fraseEl) return;
+            const frase = frasePasesReservados(pases);
+            const fuerte = document.createElement("strong");
+            fuerte.className = "cf-resaltado";
+            fuerte.textContent = String(frase.numero);
+            fraseEl.replaceChildren(`${frase.antes} `, fuerte, ` ${frase.despues}`);
+        };
+
+        const mostrarGracias = (titulo: string, texto: string, animar = true) => {
+            if (tituloGracias) tituloGracias.textContent = titulo;
+            if (textoGracias) textoGracias.textContent = texto;
+            paso1.hidden = true;
+            gracias.hidden = false;
+            if (!animar) return;
+            gsap.fromTo(gracias, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" });
+            gsap.fromTo(
+                "#cf-gracias .cf-gracias-icono path",
+                { strokeDashoffset: 1 },
+                { strokeDashoffset: 0, duration: 1.4, ease: "power2.inOut" },
+            );
+        };
+
+        // Lo que se ve al abrir: el formulario, o su respuesta si ya respondió
         const reiniciar = () => {
-            marcarCantidad(pases);
             ocultarSeguro();
             if (botonSiEnviar) botonSiEnviar.disabled = false;
+            if (respuestaPrevia?.confirmado === true) {
+                mostrarGracias(
+                    "Ya confirmaste",
+                    respuestaPrevia.asisten > 1
+                        ? `Quedó confirmada la asistencia de ${textoPersonas(respuestaPrevia.asisten)}. ¡Los esperamos!`
+                        : "Tu asistencia ya está confirmada. ¡Te esperamos!",
+                    false,
+                );
+                return;
+            }
+            if (respuestaPrevia?.confirmado === false) {
+                mostrarGracias("Te extrañaremos", "Ya nos avisaste que no podrás acompañarnos. Gracias por responder.", false);
+                return;
+            }
             paso1.hidden = false;
             gracias.hidden = true;
         };
@@ -518,15 +588,48 @@ const opcionesCantidad = Array.from({ length: Math.min(invitado.pases, 8) }, (_,
             if (e.key === "Escape") cerrar();
         });
 
-        // Elegir cuántos asisten
-        cantidades.forEach((c) => {
-            c.addEventListener("click", () => {
-                marcarCantidad(Number(c.dataset.cantidad));
-                ocultarSeguro();
-                gsap.fromTo(c, { scale: 0.9 }, { scale: 1, duration: 0.35, ease: "back.out(2)" });
-            });
-        });
+        // Los círculos de muestra también responden al toque
+        pintarCantidades();
 
+        // ═══ DATOS DEL SISTEMA ═══
+        const aplicar = (inv: Invitado | null, primeraVez: boolean) => {
+            if (!inv) return;
+
+            // Si la boda no contrató confirmación, la sección no tiene sentido
+            if (inv.funciones?.confirmacion === false) {
+                const seccion = document.getElementById("seccion-confirmar");
+                if (seccion) seccion.style.display = "none";
+                return;
+            }
+
+            nombre = inv.nombre;
+            pases = inv.pases;
+            if (nombreEl) nombreEl.textContent = inv.nombre;
+            pintarFrase();
+
+            if (primeraVez && inv.asisten && inv.asisten > 0) {
+                // Ya había respondido: se respeta su cantidad anterior
+                cantidad = inv.asisten;
+                eligioAMano = true;
+            }
+            // Si no eligió, la cantidad acompaña a los pases; si eligió, se
+            // respeta lo suyo, recortado al nuevo tope.
+            cantidad = eligioAMano ? Math.min(cantidad, pases) : pases;
+
+            // El selector de cantidad solo si la boda lo tiene contratado
+            if (cajaCuantos) cajaCuantos.hidden = inv.funciones?.cantidad !== true;
+            pintarCantidades();
+
+            respuestaPrevia =
+                inv.confirmado === true || inv.confirmado === false
+                    ? { confirmado: inv.confirmado, asisten: inv.asisten ?? 0 }
+                    : null;
+        };
+
+        datosInvitado().then((inv) => aplicar(inv, true));
+        alCambiarInvitado((inv) => aplicar(inv, false));
+
+        // ═══ RESPUESTA ═══
         // Muestra "¿Estás seguro?" con el resumen de la respuesta
         const preguntar = (siAsiste: boolean) => {
             asistira = siAsiste;
@@ -548,24 +651,22 @@ const opcionesCantidad = Array.from({ length: Math.min(invitado.pases, 8) }, (_,
 
         botonSiEnviar?.addEventListener("click", async () => {
             botonSiEnviar.disabled = true;
-            try {
-                await enviarRespuesta({ nombre, asistira, cantidad: asistira ? cantidad : 0 });
-            } catch (error) {
-                console.log("No se pudo enviar la confirmación:", error);
+            botonSiEnviar.textContent = "Enviando...";
+            const vienen = asistira ? cantidad : 0;
+
+            // Nunca lanza: sin código o sin conexión devuelve null y el
+            // invitado igual ve el agradecimiento.
+            const fila = await confirmarAsistencia(asistira, asistira ? vienen : undefined);
+            botonSiEnviar.textContent = "Sí, enviar";
+            if (fila) {
+                respuestaPrevia = { confirmado: asistira, asisten: fila.asisten ?? vienen };
             }
 
-            if (textoGracias) {
-                textoGracias.textContent = asistira
-                    ? `${nombre}, recibimos tu confirmación para ${textoPersonas(cantidad)}. ¡Te esperamos con mucho cariño!`
-                    : `${nombre}, gracias por avisarnos. Te vamos a extrañar en este día tan especial.`;
-            }
-            paso1.hidden = true;
-            gracias.hidden = false;
-            gsap.fromTo(gracias, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" });
-            gsap.fromTo(
-                "#cf-gracias .cf-gracias-icono path",
-                { strokeDashoffset: 1 },
-                { strokeDashoffset: 0, duration: 1.4, ease: "power2.inOut" },
+            mostrarGracias(
+                asistira ? "¡Gracias!" : "Te extrañaremos",
+                asistira
+                    ? `${nombre}, recibimos tu confirmación para ${textoPersonas(vienen)}. ¡Te esperamos el sábado 5 de diciembre!`
+                    : `${nombre}, gracias por avisarnos. Lamentamos que no puedas acompañarnos en este día.`,
             );
         });
     });

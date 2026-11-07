@@ -7,7 +7,8 @@ interface Props {
     nombreInvitado?: string;
 }
 
-// Datos de muestra (modelo para clientes)
+// Valores de muestra: se ven si el link no trae código (?i=...).
+// Con código, el nombre y los pases llegan desde el sistema de invitados.
 const { numeroPases = 1, nombreInvitado = "Nombre del invitado" } = Astro.props;
 // Una personita por pase (hasta 8, para que no se desborde)
 const personas = Array.from({ length: Math.min(numeroPases, 8) });
@@ -46,7 +47,7 @@ const personas = Array.from({ length: Math.min(numeroPases, 8) });
                     <span class="pa-linea pa-linea-der" data-entrada="centro"></span>
                 </div>
 
-                <p class="font-mollen-light text-[#556b2f]/90 text-base" data-entrada="abajo">
+                <p class="font-mollen-light text-[#556b2f]/90 text-base" id="reservado-pase" data-entrada="abajo">
                     Hemos reservado
                 </p>
 
@@ -166,6 +167,8 @@ const personas = Array.from({ length: Math.min(numeroPases, 8) });
     import { gsap } from "gsap";
     import { ScrollTrigger } from "gsap/ScrollTrigger";
     import { animarEntradas, sinMovimiento } from "../scripts/entradas";
+    import { textoEnSuHonor } from "../scripts/pases";
+    import { datosInvitado, alCambiarInvitado, type Invitado } from "../lib/invitado";
 
     gsap.registerPlugin(ScrollTrigger);
 
@@ -188,21 +191,23 @@ const personas = Array.from({ length: Math.min(numeroPases, 8) });
 
         animarEntradas(seccion);
 
-        // El número cuenta desde 0 hasta la cantidad de pases
+        // El número cuenta desde 0 hasta la cantidad de pases.
+        // `total` puede cambiar cuando llegan los datos del sistema: la cuenta
+        // siempre usa el valor más reciente, para no volver a escribir el viejo.
         const numero = document.getElementById("numero-pase");
-        const total = Number(numero?.dataset.pases ?? 1);
-        const contador = { valor: 0 };
+        let total = Number(numero?.dataset.pases ?? 1);
+        const contador = { avance: 0 };
         gsap.fromTo(
             contador,
-            { valor: 0 },
+            { avance: 0 },
             {
-                valor: total,
-                duration: Math.min(0.6 + total * 0.15, 1.6),
+                avance: 1,
+                duration: 1.2,
                 ease: "power2.out",
                 delay: 0.9,
                 scrollTrigger: disparo,
                 onUpdate: () => {
-                    if (numero) numero.textContent = String(Math.round(contador.valor));
+                    if (numero) numero.textContent = String(Math.round(contador.avance * total));
                 },
             },
         );
@@ -212,12 +217,56 @@ const personas = Array.from({ length: Math.min(numeroPases, 8) });
             { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(2)", delay: 0.8, scrollTrigger: disparo },
         );
 
-        // Las personitas aparecen una tras otra
+        // Las personitas aparecen (se anima el contenedor: si el sistema cambia
+        // la cantidad y se regeneran, siguen apareciendo igual)
         gsap.fromTo(
-            "#personas-pase .pa-persona",
-            { opacity: 0, y: 12, scale: 0.6 },
-            { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.12, ease: "back.out(2)", delay: 1.3, scrollTrigger: disparo },
+            "#personas-pase",
+            { opacity: 0, y: 12, scale: 0.8 },
+            { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "back.out(2)", delay: 1.3, scrollTrigger: disparo },
         );
+
+        // ═══ DATOS DEL SISTEMA DE INVITADOS ═══
+        // Con ?i=codigo en el link, el nombre y los pases vienen de la base.
+        // Si los novios los corrigen en el panel, la tarjeta se actualiza sola.
+        const nombreEl = document.getElementById("nombre-invitado-pase");
+        const textoEl = document.getElementById("texto-pase");
+        const personasEl = document.getElementById("personas-pase");
+        const plantillaPersona = personasEl?.querySelector(".pa-persona")?.cloneNode(true) as HTMLElement | undefined;
+
+        const pintarPersonas = (n: number) => {
+            if (!personasEl || !plantillaPersona) return;
+            personasEl.replaceChildren(
+                ...Array.from({ length: Math.min(n, 8) }, () => plantillaPersona.cloneNode(true)),
+            );
+        };
+
+        const mostrar = (inv: Invitado | null) => {
+            if (!inv) return;
+            if (inv.nombre && nombreEl) nombreEl.textContent = inv.nombre;
+
+            // Si la boda no contrató pases, la tarjeta muestra solo el nombre:
+            // sin esto quedaría un "1 pase en su honor" inventado.
+            const sinPases = inv.funciones?.pases === false;
+            for (const id of ["reservado-pase", "numero-pase", "texto-pase", "personas-pase"]) {
+                const el = document.getElementById(id);
+                if (el) el.style.display = sinPases ? "none" : "";
+            }
+            if (sinPases) return;
+
+            if (Number.isInteger(inv.pases) && inv.pases > 0) {
+                total = inv.pases;
+                if (numero) {
+                    numero.dataset.pases = String(total);
+                    // Si la cuenta ya terminó, se escribe el número nuevo directo
+                    if (contador.avance >= 1) numero.textContent = String(total);
+                }
+                if (textoEl) textoEl.textContent = textoEnSuHonor(total);
+                pintarPersonas(total);
+            }
+        };
+
+        datosInvitado().then(mostrar);
+        alCambiarInvitado((inv) => mostrar(inv));
 
         // Un vaivén 3D muy suave de la tarjeta
         if (!sinMovimiento()) {
