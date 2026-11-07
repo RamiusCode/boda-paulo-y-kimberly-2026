@@ -68,7 +68,8 @@
         class="portada-flor absolute bottom-0 right-0 h-[36dvh] w-auto max-w-none z-20 pointer-events-none select-none"
     />
 
-    <!-- CONTENIDO 3D -->
+    <!-- CONTENIDO: la escena 3D y, debajo, el botón quieto -->
+    <div class="relative z-10 flex flex-col items-center w-full">
     <div id="portada-escena" class="portada-escena relative z-10">
         <div id="portada-flotante" class="portada-flotante">
             <div id="portada-marco" class="portada-contenido">
@@ -106,24 +107,27 @@
                             >Kimberly</span
                         >
                     </h1>
-
-                    <!-- BOTÓN INGRESAR -->
-                    <div class="portada-item mt-7 sm:mt-9">
-                        <div id="btn-ingresar-pulso">
-                            <button
-                                id="btn-ingresar"
-                                class="portada-boton cursor-pointer font-mollen-light text-base sm:text-lg tracking-wide focus:outline-none"
-                            >
-                                <span class="relative z-[1]"
-                                    >Ingresar a mi invitación</span
-                                >
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
 
+    </div>
+
+    <!-- BOTÓN INGRESAR: fuera de la escena 3D a propósito. Dentro de una
+         escena que gira, en iPhone el toque no coincide con el botón dibujado
+         y a veces no responde. Acá queda quieto y responde siempre. -->
+    <div id="portada-boton-caja" class="portada-item mt-7 sm:mt-9 relative z-30">
+        <div id="btn-ingresar-pulso">
+            <button
+                id="btn-ingresar"
+                class="portada-boton cursor-pointer font-mollen-light text-base sm:text-lg tracking-wide focus:outline-none"
+            >
+                <span class="relative z-[1]"
+                    >Ingresar a mi invitación</span
+                >
+            </button>
+        </div>
+    </div>
     </div>
 </section>
 
@@ -471,6 +475,11 @@
                         ease: "power3.in",
                     },
                     0.15,
+                )
+                .to(
+                    "#portada-boton-caja",
+                    { opacity: 0, y: 20, duration: 0.6, ease: "power2.in" },
+                    0.2,
                 )
                 .to(
                     "#portada-sobre .portada-esquina",
