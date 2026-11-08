@@ -7,8 +7,6 @@ export interface Props {
 const { title } = Astro.props;
 
 // Vista previa al compartir el link (WhatsApp, Facebook, etc.)
-const descripcion =
-  "Sábado 5 de diciembre de 2026 · Salón de Eventos Hacienda Emma, Tiquipaya. ¡Te esperamos!";
 const urlSitio = new URL(Astro.url.pathname, Astro.site).href;
 const imagenPreview = new URL("/imagenes/og-portada-4.jpg", Astro.site).href;
 ---
@@ -22,14 +20,12 @@ const imagenPreview = new URL("/imagenes/og-portada-4.jpg", Astro.site).href;
     <link rel="icon" type="image/png" href="/iconos/Anillos.png" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
-    <meta name="description" content={descripcion} />
 
     <!-- Vista previa al compartir (Open Graph): imagen 1200x630 -->
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_BO" />
     <meta property="og:url" content={urlSitio} />
     <meta property="og:title" content={title} />
-    <meta property="og:description" content={descripcion} />
     <meta property="og:image" content={imagenPreview} />
     <meta property="og:image:secure_url" content={imagenPreview} />
     <meta property="og:image:type" content="image/jpeg" />
@@ -38,7 +34,6 @@ const imagenPreview = new URL("/imagenes/og-portada-4.jpg", Astro.site).href;
     <meta property="og:image:alt" content="Invitación a la boda de Paulo y Kimberly" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={descripcion} />
     <meta name="twitter:image" content={imagenPreview} />
     <link
       rel="preload"
