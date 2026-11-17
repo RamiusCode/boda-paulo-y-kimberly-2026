@@ -43,8 +43,9 @@ const opcionesCantidad = Array.from({ length: Math.min(invitado.pases, 8) }, (_,
             Por favor, confírmanos tu asistencia
         </p>
 
-        <!-- FECHA LÍMITE PARA CONFIRMAR -->
-        <!-- Rectángulo con trazo champán; angosto para que la flor de la derecha no lo tape -->
+        {/* FECHA LÍMITE PARA CONFIRMAR: comentada por ahora, se activará más adelante.
+            Al activarla, devolver "#fecha-limite-confirmar" a la animación del script.
+            Rectángulo con trazo champán; angosto para que la flor de la derecha no lo tape
         <div class="cf-limite mb-8" id="fecha-limite-confirmar">
             <svg class="w-6 h-6 text-[#a8874f] mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="3.5" y="5" width="17" height="15" rx="2"></rect>
@@ -58,6 +59,7 @@ const opcionesCantidad = Array.from({ length: Math.min(invitado.pases, 8) }, (_,
                 lunes 16 de noviembre
             </p>
         </div>
+        */}
 
         <!-- BOTÓN CONFIRMAR: abre la ventana -->
         <button
@@ -421,7 +423,7 @@ const opcionesCantidad = Array.from({ length: Math.min(invitado.pases, 8) }, (_,
             0,
         )
         .fromTo(
-            ["#texto-confirmar", "#subtexto-confirmar", "#fecha-limite-confirmar"],
+            ["#texto-confirmar", "#subtexto-confirmar"], // + "#fecha-limite-confirmar" cuando se active
             { opacity: 0, y: 20 },
             { opacity: 1, y: 0, duration: 0.9, stagger: 0.15, ease: "sine.out" },
             0.3,
